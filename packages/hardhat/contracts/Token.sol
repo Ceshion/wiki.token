@@ -47,7 +47,7 @@ contract Token is ERC721, Ownable {
     // hash because wikidata ids are alphanumeric
     uint256 idHash = uint256(sha256(abi.encode(idBytes)));
     _mint(msg.sender, idHash);
-    _setTokenURI(idHash, string(wikidataId));
+    _setTokenURI(idHash, wikidataId);
 
     _wikidataIdToAddress[idHash] = msg.sender;
     _mintedTokensPerAddress[msg.sender] += 1;
