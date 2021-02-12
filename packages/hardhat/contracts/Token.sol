@@ -26,21 +26,30 @@ contract Token is ERC721, Ownable {
     return 16;
   }
 
-  function isClaimed(uint256 wikidataId) view public returns (bool) {
-    return _wikidataIdToAddress[wikidataId] != 0x0000000000000000000000000000000000000000;
-  }
+  function isClaimed(string memory wikidataId) view public returns (bool) {
+    bytes memory idBytes = bytes(wikidataId);
+    require (idBytes.length > 0, "Page must be specified");
 
-  function mint(uint256 wikidataId) public {
+    uint256 idHash = uint256(sha256(abi.encode(idBytes)));
+    return _wikidataIdToAddress[idHash] != 0x0000000000000000000000000000000000000000;
+  }
+  
+  function mint(string memory wikidataId) public {
+    bytes memory idBytes = bytes(wikidataId);
+    require (idBytes.length > 0, "Page must be specified");
     require (!isClaimed(wikidataId), "Page must not be claimed");
     require (
       _mintedTokensPerAddress[msg.sender] < getMaxMintableTokensPerAddress(),
       "Max minted tokens reached"
     );
 
-    _mint(msg.sender, wikidataId);
-    _setTokenURI(wikidataId, Strings.toString(wikidataId));
+    
+    // hash because wikidata ids are alphanumeric
+    uint256 idHash = uint256(sha256(abi.encode(idBytes)));
+    _mint(msg.sender, idHash);
+    _setTokenURI(idHash, string(wikidataId));
 
-    _wikidataIdToAddress[wikidataId] = msg.sender;
+    _wikidataIdToAddress[idHash] = msg.sender;
     _mintedTokensPerAddress[msg.sender] += 1;
   }
 }

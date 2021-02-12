@@ -38,6 +38,7 @@ export default function Landing({ contracts }) {
 
   const claim = async () => {
     console.log(`claiming: ${articleQueryResponse?.wikidataId}`);
+    contracts.Token.mint(articleQueryResponse?.wikidataId);
   };
 
   return (
